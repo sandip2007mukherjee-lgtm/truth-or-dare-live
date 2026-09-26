@@ -1,0 +1,8 @@
+{
+  "name": "Truth or Dare Pro",
+  "version": "2.0.0-production-starter",
+  "truthCount": 107,
+  "dareCount": 108,
+  "maxLocalPlayers": 50,
+  "firebase": "Realtime Database + Anonymous Auth"
+}

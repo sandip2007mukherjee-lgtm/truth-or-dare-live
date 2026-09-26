@@ -1,0 +1,77 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['displayName']) && newData.child('displayName').isString() && newData.child('displayName').val().length >= 1 && newData.child('displayName').val().length <= 32"
+      }
+    },
+    "config": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2'"
+    },
+    "rooms": {
+      "$roomId": {
+        ".read": "auth != null && (data.child('status').val() === 'lobby' || data.child('players').child(auth.uid).exists())",
+        ".write": "auth != null && !data.exists() && newData.child('hostUid').val() === auth.uid",
+        "hostUid": {
+          ".validate": "newData.isString() && (data.exists() ? newData.val() === data.val() : newData.val() === auth.uid)"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "updatedAt": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isNumber()"
+        },
+        "status": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isString() && (newData.val() === 'lobby' || newData.val() === 'playing' || newData.val() === 'result' || newData.val() === 'challenge' || newData.val() === 'finished' || newData.val() === 'closed')"
+        },
+        "current": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 50"
+        },
+        "currentUid": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isString()"
+        },
+        "turn": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 1000"
+        },
+        "type": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isString() && (newData.val() === 'TRUTH' || newData.val() === 'DARE')"
+        },
+        "challenge": {
+          ".write": "auth != null && data.parent().child('players').child(auth.uid).exists() && data.parent().child('status').val() === 'result' && (data.val() === '' || data.val() == null || data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "challengeStartedAt": {
+          ".write": "auth != null && (data.parent().child('hostUid').val() === auth.uid || data.parent().child('currentUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+          ".validate": "newData.isNumber()"
+        },
+        "players": {
+          "$uid": {
+            ".read": "auth != null && data.parent().parent().child('players').child(auth.uid).exists()",
+            ".write": "auth != null && (auth.uid === $uid || data.parent().parent().child('hostUid').val() === auth.uid || auth.uid === 'eSZBGSabJ5UMBcXhaGooD2sC8Rq2')",
+            ".validate": "newData.hasChildren(['id','name','host','online']) && newData.child('id').val() === $uid && newData.child('name').isString() && newData.child('name').val().length >= 1 && newData.child('name').val().length <= 32 && newData.child('host').isBoolean() && newData.child('online').isBoolean()"
+          }
+        },
+        "rtc": {
+          "$from": {
+            "$to": {
+              "$signalId": {
+                ".read": "auth != null && (auth.uid === $from || auth.uid === $to) && data.parent().parent().parent().parent().child('players').child(auth.uid).exists()",
+                ".write": "auth != null && (auth.uid === $from || auth.uid === $to) && data.parent().parent().parent().parent().child('players').child(auth.uid).exists()",
+                ".validate": "newData.hasChildren(['kind','payload']) && newData.child('kind').isString() && newData.child('payload').isString() && newData.child('payload').val().length <= 50000"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
